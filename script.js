@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('mainContainer');
     const tenorGif = document.getElementById('tenorGif');
     const music = document.getElementById('vibeMusic');
+    
+    music.loop = true;
+
     let hasIncreased = false;
 
     // Mobile browsers often need the audio to be "loaded" explicitly
