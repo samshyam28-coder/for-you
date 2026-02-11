@@ -4,25 +4,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('mainContainer');
     const tenorGif = document.getElementById('tenorGif');
     const music = document.getElementById('vibeMusic');
+    const clickSound = document.getElementById('clickSound'); 
     
     music.loop = true;
-
     let hasIncreased = false;
 
-    // Mobile browsers often need the audio to be "loaded" explicitly
+    // Load both sounds for mobile readiness
     music.load();
+    clickSound.load();
 
-    // THE MOBILE UNLOCKER: This triggers on the very first touch of the screen
+    // MOBILE UNLOCKER: Unlocks audio on first interaction
     const unlockAudio = () => {
-        music.play().then(() => {
-            music.pause();
-            music.currentTime = 0;
-        }).catch(e => console.log("Waiting for user..."));
+        [music, clickSound].forEach(sound => {
+            sound.play().then(() => {
+                sound.pause();
+                sound.currentTime = 0;
+            }).catch(e => console.log("Waiting for interaction..."));
+        });
         document.removeEventListener('touchstart', unlockAudio);
     };
     document.addEventListener('touchstart', unlockAudio);
 
     const handleNoInteraction = () => {
+        // Play the click/keypad sound
+        clickSound.currentTime = 0; 
+        clickSound.play().catch(e => console.log("Click sound blocked"));
+
         const padding = 60; 
         const maxX = window.innerWidth - noBtn.offsetWidth - padding;
         const maxY = window.innerHeight - noBtn.offsetHeight - padding;
@@ -44,13 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     noBtn.addEventListener('mouseover', handleNoInteraction);
     noBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Stop mobile zoom/scrolling on fast taps
         handleNoInteraction();
     });
 
     yesBtn.addEventListener('click', () => {
-        // Play music FIRST - this is the "User Gesture" mobile requires
-        music.play().catch(error => console.log("Error:", error));
+        music.play().catch(error => console.log("Music Error:", error));
 
         document.querySelector('.button-wrapper').style.display = 'none';
         document.getElementById('footerText').style.display = 'none';
